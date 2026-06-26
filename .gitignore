@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Model artefacts (provide separately; too large for git)
+src/models/*.pth
+src/models/*.joblib
+src/ProteinMPNN/vanilla_model_weights/*.pt
+src/ProteinMPNN/protein_mpnn_utils.py
+
+# Runtime outputs
+features/
+*.npz
+predictions*.csv
