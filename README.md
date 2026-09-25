@@ -62,22 +62,22 @@ metrics when `pK` is supplied).
 Everything is controlled by `src/config.py`.
 
 ```bash
-python train.py                      # uses the settings in src/config.py
+python train.py                     
 python train.py --device cuda --install
 ```
 
 For each feature matrix, `train.py` either loads the `.npz` given in
 `config.py` or, if the path is `None`, computes it from the PDB files in
-`data/pdbs/` with the same code `predict.py` uses:
+`data/pdbs/`
 
 * **Quick retrain** (default): the shipped `.npz` files are used and only the
   two HGB regressors are refit.
 * **Full replication**: set all three to `None` and provide the structures as
   `data/pdbs/<Frame>.pdb` (pattern: `PDB_FILENAME`, peptide chain: `PEPTIDE_CHAIN`).
+  The `pdbs` directory can be downloaded, together with the test structures, from the Zenodo repository:
 
-The HGB regressors are fit on all `Train` frames; if `EVALUATE_TEST` is on, 
-the ensemble is scored on first-frame (`replica1_..._1`) `Test` rows. 
-A single `SEED` is used throughout, so runs are reproducible.
+The HGB regressors are fit on all `Train` frames; if `EVALUATE_TEST` is on,
+the ensemble is scored on first-frame (`replica1_..._1`) `Test` rows.
 
 Outputs go to `training_output/` (`models/`, computed `features/`,
 `test_metrics.csv`, `test_predictions.csv`, `config_used.py`). `--install`
