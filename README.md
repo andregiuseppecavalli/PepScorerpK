@@ -21,6 +21,7 @@ Final prediction = `0.5 * pred_structural + 0.5 * pred_sequence`.
 ```bash
 conda env create -f environment.yml
 conda activate pepscorer
+```
 
 ## Test the installation
 
