@@ -105,7 +105,7 @@ MPNN_EMBEDDINGS_FILE = os.path.join(FEATURES_DIR, "embeddings_pmpnn_48_multi.npz
 SEQUENCE_EMB_FILE    = os.path.join(FEATURES_DIR, "sequence_emb_combined.npz")
 
 # ---- HGB regressors -----------------------------------------------------------
-HGB_MPNN_PARAMS = {"max_iter": 10,  "max_leaf_nodes": 100, "learning_rate": 0.01, "early_stopping": False}
+HGB_MPNN_PARAMS = {"max_iter": 10, "early_stopping": False}
 HGB_SEQ_PARAMS  = {"max_iter": 100, "max_leaf_nodes": 31,  "learning_rate": 0.1,  "early_stopping": False}
 
 # ---- Output -------------------------------------------------------------------

@@ -1,0 +1,25 @@
+# Minimal environment for train.py (and predict.py).
+#
+#   conda env create -f environment.yml
+#   conda activate pepscorer
+#
+# numpy is pinned to 1.26 to match the prediction environment on Leonardo.
+# PyTorch comes from the official wheel index (CUDA 12.1 build; runs on CPU
+# too). For a CPU-only machine, replace "cu121" with "cpu" below.
+name: pepscorer
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy=1.26
+  - pandas
+  - scipy
+  - scikit-learn        # pin to the version used where predict.py runs (see notes)
+  - joblib
+  - biopython           # pocket detection
+  - biotite>=1.0        # PDB parsing for MPNN / sequence features
+  - tqdm
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.3.1
