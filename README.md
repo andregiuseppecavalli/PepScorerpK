@@ -16,61 +16,24 @@ The model is a 50/50 ensemble of two HistGradientBoostingRegressor heads:
 
 Final prediction = `0.5 * pred_structural + 0.5 * pred_sequence`.
 
-Feature pipeline (all orchestrated by `src/calculate_features.py`):
-
-```
-pocket.identify_peptide_and_pocket   # chain ID -> (chain, res_id) keys
-        |
-feature_extraction_score             # ProteinMPNN embeddings [512] + scores [24]
-        |
-apply_mlp_to_embeddings              # MLP transform -> learned features [64]
-        |
-extract_sequence_features            # hand-crafted features [54]
-        |
-merge_sequence_features              # [54] + [24] -> sequence+score [78]
-```
-
-### Residue identification
-
-Peptide and pocket residues are tracked by **(chain_id, res_id)** tuples, so a
-peptide residue numbered `5` and a pocket residue numbered `5` (per-chain
-numbering from 1) are never confused.
-
-## Layout
-
-```
-predict.py                 # CLI entry point (run from here)
-requirements.txt
-src/
-  calculate_features.py    # orchestrates all feature computation
-  pocket.py                # chain-aware peptide/pocket detection
-  feature_extraction_score.py
-  proteinMPNN_dataset_score.py
-  proteinMPNN_model_score.py
-  apply_mlp_to_embeddings.py
-  mlp_model_trainer.py
-  mlp_config.py
-  extract_sequence_features.py
-  merge_sequence_features.py
-  config.py                # paths to weights & trained models
-  models/                  # <-- put mlp_final.pth, mpnn_full.joblib, seq_full.joblib here
-  ProteinMPNN/             # <-- put protein_mpnn_utils.py + v_48_020.pt here
-```
-
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+conda env create -f environment.yml
+conda activate pepscorer
 
-# ProteinMPNN backbone
-git clone https://github.com/dauparas/ProteinMPNN
-cp ProteinMPNN/protein_mpnn_utils.py src/ProteinMPNN/
-cp ProteinMPNN/vanilla_model_weights/v_48_020.pt src/ProteinMPNN/vanilla_model_weights/
+# Trained models
+cp /path/to/mlp.pth   src/models/
+cp /path/to/str_moddel.joblib src/models/
+cp /path/to/seq_model.joblib  src/models/
+```
 
-# Trained artefacts
-cp /path/to/mlp_final.pth   src/models/
-cp /path/to/mpnn_full.joblib src/models/
-cp /path/to/seq_full.joblib  src/models/
+## Test the installation
+
+After setup, test the installation by running the following command:
+
+```bash
+python predict.py --pdb Example/1AQC.pdb --peptide-chain C
 ```
 
 ## Usage
@@ -93,3 +56,45 @@ Options: `--radius 5.0`, `--workdir features`, `--device cpu|cuda`,
 Intermediate feature files are written to `--workdir` (default `features/`).
 The output CSV has `id, pred_mpnn, pred_seq, pred_pK` (plus `y_true` and printed
 metrics when `pK` is supplied).
+
+## Retraining
+
+Everything is controlled by `src/config.py`.
+
+```bash
+python train.py                      # uses the settings in src/config.py
+python train.py --device cuda --install
+```
+
+For each feature matrix, `train.py` either loads the `.npz` given in
+`config.py` or, if the path is `None`, computes it from the PDB files in
+`data/pdbs/` with the same code `predict.py` uses:
+
+* **Quick retrain** (default): the shipped `.npz` files are used and only the
+  two HGB regressors are refit.
+* **Full replication**: set all three to `None` and provide the structures as
+  `data/pdbs/<Frame>.pdb` (pattern: `PDB_FILENAME`, peptide chain: `PEPTIDE_CHAIN`).
+
+The HGB regressors are fit on all `Train` frames; if `EVALUATE_TEST` is on, 
+the ensemble is scored on first-frame (`replica1_..._1`) `Test` rows. 
+A single `SEED` is used throughout, so runs are reproducible.
+
+Outputs go to `training_output/` (`models/`, computed `features/`,
+`test_metrics.csv`, `test_predictions.csv`, `config_used.py`). `--install`
+copies the three models into `src/models/` so `predict.py` uses them.
+
+## License
+
+This project is licensed under the MIT License — see `LICENSE`.
+
+## Third-party notices
+
+`src/ProteinMPNN/protein_mpnn_utils.py` and the model weights are taken from
+the [ProteinMPNN repository](https://github.com/dauparas/ProteinMPNN) by
+Justas Dauparas, used under the MIT License (see `src/ProteinMPNN/LICENSE`).
+
+If you use this software, please also cite the ProteinMPNN paper:
+
+> Dauparas, J. et al. Robust deep learning–based protein sequence design using
+> ProteinMPNN. *Science* **378**, 49–56 (2022).
+> https://doi.org/10.1126/science.add2187

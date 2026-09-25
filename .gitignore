@@ -4,12 +4,3 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
-
-# Model artefacts (provide separately; too large for git)
-src/models/*.pth
-src/models/*.joblib
-
-# Runtime outputs
-features/
-*.npz
-predictions*.csv

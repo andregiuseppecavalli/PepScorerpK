@@ -10,9 +10,9 @@ MPNN_WEIGHTS = os.path.join(SRC_DIR, "ProteinMPNN", "vanilla_model_weights", "v_
 K_NEIGHBORS  = 48
 
 # Trained models used by predict.py
-MLP_CHECKPOINT = os.path.join(SRC_DIR, "models", "mlp_final.pth")     # MLP fine-tuner
-MPNN_REGRESSOR = os.path.join(SRC_DIR, "models", "mpnn_full.joblib")  # HGB on MLP feats [64]
-SEQ_REGRESSOR  = os.path.join(SRC_DIR, "models", "seq_full.joblib")   # HGB on seq+score [78]
+MLP_CHECKPOINT = os.path.join(SRC_DIR, "models", "mlp.pth")     # MLP fine-tuner
+MPNN_REGRESSOR = os.path.join(SRC_DIR, "models", "str_model.joblib")  # HGB on MLP feats [64]
+SEQ_REGRESSOR  = os.path.join(SRC_DIR, "models", "seq_model.joblib")   # HGB on seq+score [78]
 
 # Ensemble weighting (50/50 average of the two HGB heads)
 W_MPNN = 0.5
@@ -42,7 +42,7 @@ MLP_CONFIG = {
 }
 
 # Training (train.py only)
-DATASET_CSV = os.path.join(DATA_DIR, "frames_balanced_480_modpK.csv")
+DATASET_CSV = os.path.join(DATA_DIR, "Dataset.csv")
 ID_COL      = "Frame"           
 TARGET_COL  = "pK"
 SPLIT_COL   = "Split"              
@@ -57,9 +57,9 @@ FEATURE_BATCH_SIZE = 16
 # Each is an .npz with 'ids' and 'embeddings'.
 # Everything set to None = full replication from the PDB structures.
 FEATURES_DIR         = os.path.join(DATA_DIR, "features")
-MLP_EMBEDDINGS_FILE  = os.path.join(FEATURES_DIR, "embeddings_mpnn_mlp_finetuned_last64.npz")
-MPNN_EMBEDDINGS_FILE = os.path.join(FEATURES_DIR, "embeddings_pmpnn_48_multi.npz")
-SEQUENCE_EMB_FILE    = os.path.join(FEATURES_DIR, "sequence_emb_combined.npz")
+MLP_EMBEDDINGS_FILE  = os.path.join(FEATURES_DIR, "embeddings_mpnn_mlp.npz")
+MPNN_EMBEDDINGS_FILE = os.path.join(FEATURES_DIR, "embeddings_pmpnn.npz")
+SEQUENCE_EMB_FILE    = os.path.join(FEATURES_DIR, "embeddings_seq.npz")
 
 # HGB regressors
 HGB_MPNN_PARAMS = {"max_iter": 10, "early_stopping": False}
