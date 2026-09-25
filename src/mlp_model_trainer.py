@@ -1,9 +1,3 @@
-"""
-Small, configurable MLP that takes precomputed MPNN embeddings as input and
-predicts pK. It exposes hidden-layer activations so a downstream script can
-extract the penultimate (or any specified) hidden layer as the "task-aligned"
-embedding for a tree regressor.
-"""
 import copy
 import numpy as np
 import torch
@@ -80,10 +74,6 @@ class MLP(nn.Module):
                 return h
         return h
 
-
-# ============================================================================
-# Trainer (unused at inference; kept for completeness / retraining)
-# ============================================================================
 def calc_metrics(y_true, y_pred):
     y_true = np.asarray(y_true).flatten()
     y_pred = np.asarray(y_pred).flatten()

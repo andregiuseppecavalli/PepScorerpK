@@ -1,13 +1,3 @@
-"""
-Compute ProteinMPNN-derived features for a set of complexes.
-
-Returns, for each record:
-    * structural embeddings  [N, 512]   (pep | pock | prod | diff)
-    * peptide score features [N, 24]    (logprob, recovery, entropy, 21-dim dist)
-
-This is the importable form of the original feature_extraction_score.py
-(paths and CSV loading removed; it now consumes in-memory records).
-"""
 import numpy as np
 import torch
 from torch.utils.data import DataLoader

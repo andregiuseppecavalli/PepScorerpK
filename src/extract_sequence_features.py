@@ -1,18 +1,3 @@
-"""
-Extract per-complex hand-crafted sequence features (peptide + pocket) from PDB
-files. Importable form of the original extract_sequence_features.py; residue
-roles are now assigned by (chain_id, res_id) keys.
-
-Features per chain (27 per chain, 54 total):
-    20  AA composition fractions (A C D E F G H I K L M N P Q R S T V W Y)
-    1   length
-    1   mean hydrophobicity (Kyte-Doolittle)
-    1   mean formal charge at pH ~7
-    1   fraction aromatic (F, W, Y, H)
-    1   total hydrophobicity
-    1   total charge
-    1   aromatic count
-"""
 import numpy as np
 import biotite.structure as struc
 from biotite.structure.io import pdb

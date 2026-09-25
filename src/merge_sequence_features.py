@@ -1,17 +1,3 @@
-"""
-merge_sequence_features.py
---------------------------
-Combine the hand-crafted sequence features (54-dim, from
-extract_sequence_features.py) with the ProteinMPNN score features (24-dim, from
-feature_extraction_score.py) into the 78-dim matrix that the sequence HGBR head
-(seq_full.joblib) consumes.
-
-In the original training workflow this was a standalone step run after
-extract_sequence_features.py. Here it is an importable function that
-calculate_features.py calls, but it can still be used on its own:
-
-    ids, X78, _ = merge_sequence_features(seq54, seq_ids, scores24, score_ids)
-"""
 import numpy as np
 
 
@@ -50,5 +36,5 @@ def merge_sequence_features(seq_feats, seq_ids, scores, score_ids):
     keep, seq_aligned = _align(score_ids, seq_ids, seq_feats)
     ids_common = np.asarray(score_ids)[keep]
     scores_c = np.asarray(scores)[keep]
-    combined = np.concatenate([seq_aligned, scores_c], axis=1)  # [N, 54+24 = 78]
+    combined = np.concatenate([seq_aligned, scores_c], axis=1)
     return ids_common, combined, keep

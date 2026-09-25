@@ -1,22 +1,4 @@
-"""
-Chain-aware identification of peptide and binding-pocket residues.
-
-Replaces the old pep_res_dict / pocket_res_dict pickle dictionaries. The
-peptide is now specified by a single chain ID (e.g. "C"); every standard
-residue in that chain becomes the peptide, and the pocket is whatever protein
-residues fall within `radius` Angstroms of any peptide atom.
-
-IMPORTANT -- residue-ID collisions:
-    When a PDB numbers every chain from 1, a peptide residue and a pocket
-    residue can share the same integer res_id. To keep them distinct, every
-    residue is identified by a (chain_id, res_id) tuple rather than res_id
-    alone. The whole downstream pipeline keys its peptide/pocket masks on
-    these tuples, so collisions are impossible.
-
-This is a chain-aware adaptation of the get_binding_pocket() helper.
-"""
 from Bio.PDB import PDBParser, NeighborSearch
-
 
 def identify_peptide_and_pocket(pdb_file, peptide_chain, radius=5.0):
     """
@@ -33,7 +15,7 @@ def identify_peptide_and_pocket(pdb_file, peptide_chain, radius=5.0):
     """
     parser = PDBParser(QUIET=True)
     structure = parser.get_structure("complex", pdb_file)
-    model = structure[0]  # first model only
+    model = structure[0]
 
     chain_ids = [c.id for c in model]
     if peptide_chain not in chain_ids:
@@ -42,7 +24,6 @@ def identify_peptide_and_pocket(pdb_file, peptide_chain, radius=5.0):
             f"Available chains: {chain_ids}"
         )
 
-    # --- Peptide: all standard residues in the requested chain --------------
     peptide_residue_objects = set()
     peptide_atoms = []
     pep_keys = set()
@@ -61,7 +42,6 @@ def identify_peptide_and_pocket(pdb_file, peptide_chain, radius=5.0):
             "Check the chain ID and the PDB file."
         )
 
-    # --- Pocket: protein residues near the peptide, on other chains ---------
     all_atoms = list(model.get_atoms())
     ns = NeighborSearch(all_atoms)
 
@@ -71,10 +51,10 @@ def identify_peptide_and_pocket(pdb_file, peptide_chain, radius=5.0):
             if res in peptide_residue_objects:
                 continue
             hetflag, resseq, icode = res.get_id()
-            if hetflag != " ":              # skip waters / heteroatoms
+            if hetflag != " ":             
                 continue
             chain_id = res.get_parent().id
-            if chain_id == peptide_chain:    # safety: never put peptide in pocket
+            if chain_id == peptide_chain:   
                 continue
             pock_keys.add((chain_id, int(resseq)))
 

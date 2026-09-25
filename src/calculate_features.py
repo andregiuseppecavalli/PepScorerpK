@@ -1,22 +1,3 @@
-"""
-calculate_features.py
----------------------
-Turns a list of (pdb, peptide_chain) inputs into feature matrices.
-
-Two stages, so that training and inference share exactly the same code:
-
-  calculate_raw_features()   -- needs only ProteinMPNN, no trained model
-      1. pocket.identify_peptide_and_pocket   -> (chain, res_id) keys
-      2. feature_extraction_score             -> MPNN embeddings [512] + scores [24]
-      3. extract_sequence_features            -> hand-crafted sequence feats [54]
-      4. merge_sequence_features              -> sequence+score feats [54+24 = 78]
-
-  calculate_features()       -- inference: raw features + trained MLP
-      5. apply_mlp_to_embeddings              -> MLP-learned structural feats [64]
-
-train.py uses stage 1-4 to build its inputs and trains the MLP itself;
-predict.py uses the full chain. Intermediate .npz files go to `workdir`.
-"""
 import os
 import numpy as np
 import torch

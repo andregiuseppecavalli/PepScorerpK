@@ -1,10 +1,3 @@
-"""
-Transform raw ProteinMPNN embeddings into MLP-learned representations.
-
-Loads the trained MLP checkpoint and runs the raw embeddings through it in eval
-mode, extracting activations from a chosen hidden layer. This is the importable
-form of the original apply_mlp_to_embeddings.py.
-"""
 import numpy as np
 import torch
 

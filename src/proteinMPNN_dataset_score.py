@@ -6,12 +6,9 @@ from biotite.structure.io import pdb
 from biotite.sequence import ProteinSequence
 
 
-# ProteinMPNN amino acid alphabet (21 letters; X = unknown / padding token).
-# The order MUST match protein_mpnn_utils.py so that S indices line up with
-# the rows of W_s and the columns of W_out logits.
 MPNN_ALPHABET = "ACDEFGHIKLMNPQRSTVWYX"
 MPNN_AA_TO_IDX = {aa: i for i, aa in enumerate(MPNN_ALPHABET)}
-MPNN_X_IDX = MPNN_AA_TO_IDX["X"]  # 20
+MPNN_X_IDX = MPNN_AA_TO_IDX["X"]
 
 
 def parse_pdb_mpnn(fpath, pep_keys, pock_keys):
@@ -24,10 +21,6 @@ def parse_pdb_mpnn(fpath, pep_keys, pock_keys):
         fpath (str):      path to the PDB file
         pep_keys (set):   set of (chain_id, res_id) tuples for peptide residues
         pock_keys (set):  set of (chain_id, res_id) tuples for pocket residues
-
-    Residues are identified by the (chain_id, res_id) tuple so that peptide and
-    pocket residues sharing the same integer id (per-chain numbering from 1)
-    are never confused.
     """
     try:
         pdb_file = pdb.PDBFile.read(fpath)
@@ -63,20 +56,18 @@ def parse_pdb_mpnn(fpath, pep_keys, pock_keys):
         r_id = int(res.res_id[0])
         key = (c_id, r_id)
 
-        # Backbone atoms ---------------------------------------------------
         try:
             n  = res[res.atom_name == "N"][0].coord
             ca = res[res.atom_name == "CA"][0].coord
             c  = res[res.atom_name == "C"][0].coord
             o_atoms = res[np.isin(res.atom_name, ["O", "OXT"])]
             if len(o_atoms) == 0:
-                continue  # missing backbone, drop this residue
+                continue 
             o = o_atoms[0].coord
             coords.append([n, ca, c, o])
         except IndexError:
             continue
 
-        # Sequence ---------------------------------------------------------
         try:
             aa1 = ProteinSequence.convert_letter_3to1(res.res_name[0])
         except Exception:
@@ -85,11 +76,9 @@ def parse_pdb_mpnn(fpath, pep_keys, pock_keys):
             aa1 = "X"
         S_seq.append(MPNN_AA_TO_IDX[aa1])
 
-        # Bookkeeping ------------------------------------------------------
         chain_encoding.append(chain_to_int[c_id])
         res_idx.append(r_id)
 
-        # Role assignment keyed on (chain, res_id)
         is_peptide = key in pep_keys
         is_pocket  = (key in pock_keys) and (not is_peptide)
 
@@ -108,7 +97,7 @@ def parse_pdb_mpnn(fpath, pep_keys, pock_keys):
         return None, "Pocket mask empty (pocket keys didn't match the PDB)"
 
     return {
-        "X":           torch.tensor(np.array(coords), dtype=torch.float32),  # [L, 4, 3]
+        "X":           torch.tensor(np.array(coords), dtype=torch.float32),
         "chain_M":     torch.tensor(chain_encoding, dtype=torch.long),
         "residue_idx": torch.tensor(res_idx, dtype=torch.long),
         "mask_pep":    torch.tensor(mask_pep, dtype=torch.float32),

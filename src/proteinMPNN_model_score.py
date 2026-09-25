@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Official ProteinMPNN class -- requires protein_mpnn_utils.py from the repo.
 try:
     from ProteinMPNN.protein_mpnn_utils import ProteinMPNN
 except ImportError:
@@ -11,14 +10,8 @@ except ImportError:
         "ProteinMPNN repository into src/ProteinMPNN/."
     )
 
-
-# Must match proteinMPNN_dataset_score.MPNN_ALPHABET and the model's W_s / W_out.
 MPNN_ALPHABET = "ACDEFGHIKLMNPQRSTVWYX"
 
-
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
 def gather_nodes(nodes, neighbor_idx):
     """Gather node features at neighbor indices.
     nodes:        [B, N, C]
@@ -40,10 +33,6 @@ def cat_neighbors_nodes(h_nodes, h_neighbors, E_idx):
     h_nodes_gathered = gather_nodes(h_nodes, E_idx)
     return torch.cat([h_neighbors, h_nodes_gathered], -1)
 
-
-# ---------------------------------------------------------------------------
-# Combined encoder + scorer
-# ---------------------------------------------------------------------------
 class ProteinMPNNEncoderScorer(nn.Module):
     """
     Wraps a frozen ProteinMPNN and returns BOTH:
@@ -59,8 +48,8 @@ class ProteinMPNNEncoderScorer(nn.Module):
                                  positions (21 dims)
     """
 
-    EMB_DIM = 512    # 4 x 128 (pep | pock | prod | diff)
-    SCORE_DIM = 24   # 1 + 1 + 1 + 21
+    EMB_DIM = 512    
+    SCORE_DIM = 24  
 
     def __init__(self, checkpoint_path, device, k_neighbors=48):
         super().__init__()
@@ -102,9 +91,6 @@ class ProteinMPNNEncoderScorer(nn.Module):
             B, L = mask.shape
             device = X.device
 
-            # ============================================================
-            # 1. ENCODER (structural representation)
-            # ============================================================
             E, E_idx = self.mpnn.features(X, mask, residue_idx, chain_enc)
             h_V = torch.zeros((B, L, E.shape[-1]), device=device)
             h_E = self.mpnn.W_e(E)
@@ -116,9 +102,6 @@ class ProteinMPNNEncoderScorer(nn.Module):
 
             h_V_enc = h_V
 
-            # ============================================================
-            # 2. POOLING -> structural embedding features (512)
-            # ============================================================
             pep_denom  = torch.clamp(m_pep.sum(1, keepdim=True),  min=1e-9)
             pock_denom = torch.clamp(m_pock.sum(1, keepdim=True), min=1e-9)
 
@@ -126,13 +109,8 @@ class ProteinMPNNEncoderScorer(nn.Module):
             pock_vec = (h_V_enc * m_pock.unsqueeze(-1)).sum(1) / pock_denom
             prod = pep_vec * pock_vec
             diff = torch.abs(pep_vec - pock_vec)
-            emb_feat = torch.cat([pep_vec, pock_vec, prod, diff], dim=1)  # [B, 512]
+            emb_feat = torch.cat([pep_vec, pock_vec, prod, diff], dim=1)
 
-            # ============================================================
-            # 3. DECODER (autoregressive sequence scoring)
-            # ============================================================
-            # Designed positions (peptide) are decoded LAST, conditioned on the
-            # full native pocket sequence.
             chain_M_design = m_pep * mask
 
             randn = torch.randn(chain_M_design.shape, device=device)
@@ -168,13 +146,10 @@ class ProteinMPNNEncoderScorer(nn.Module):
                 h_ESV = mask_bw * h_ESV + h_EXV_encoder_fw
                 h = layer(h, h_ESV, mask)
 
-            logits = self.mpnn.W_out(h)                 # [B, L, 21]
+            logits = self.mpnn.W_out(h)               
             log_probs = F.log_softmax(logits, dim=-1)
             probs = torch.exp(log_probs)
 
-            # ============================================================
-            # 4. PEPTIDE SCORE FEATURES (24)
-            # ============================================================
             true_logprob_per_res = torch.gather(
                 log_probs, 2, S.unsqueeze(-1)
             ).squeeze(-1)
@@ -197,6 +172,6 @@ class ProteinMPNNEncoderScorer(nn.Module):
             score_feat = torch.cat(
                 [pep_mean_logprob, recovery, pep_mean_entropy, pep_mean_dist],
                 dim=1,
-            )  # [B, 24]
+            ) 
 
         return {"embeddings": emb_feat, "score_features": score_feat}

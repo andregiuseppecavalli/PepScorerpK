@@ -1,15 +1,3 @@
-"""
-mlp_finetune.py
----------------
-Fine-tune the MLP head on raw ProteinMPNN embeddings [512] and extract the
-last-hidden-layer activations [64] used by the structural HGB regressor.
-
-Importable form of the original main_MLP_finetune.py:
-  * k-fold StratifiedGroupKFold CV on train+val, used ONLY to find the best
-    epoch in each fold (no CV metrics / predictions are saved);
-  * refit on the full train+val for round(mean best epoch) epochs;
-  * extraction of the hidden-layer activations for any set of rows.
-"""
 import random
 
 import numpy as np
