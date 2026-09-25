@@ -22,12 +22,6 @@ Final prediction = `0.5 * pred_structural + 0.5 * pred_sequence`.
 conda env create -f environment.yml
 conda activate pepscorer
 
-# Trained models
-cp /path/to/mlp.pth   src/models/
-cp /path/to/str_moddel.joblib src/models/
-cp /path/to/seq_model.joblib  src/models/
-```
-
 ## Test the installation
 
 After setup, test the installation by running the following command:
