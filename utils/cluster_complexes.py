@@ -77,39 +77,6 @@ def get_chain_sequence(file_path, chain_id, model_index=1):
     
     return str(seq_obj)
 
-def read_mmalign_matrix(matrix_file_path):
-    """
-    Parses the MM-align output matrix.
-    Returns U (3x3 rotation) and t (1x3 translation).
-    """
-    t_vec = np.zeros(3)
-    u_mat = np.zeros((3, 3))
-    
-    try:
-        with open(matrix_file_path, 'r') as f:
-            lines = f.readlines()
-            
-        start_reading = False
-        for line in lines:
-            if "The rotation matrix to rotate Chain_1 to Chain_2" in line:
-                start_reading = True
-                continue
-            
-            if start_reading:
-                parts = line.strip().split()
-                # Parse rows starting with index 0, 1, 2
-                if len(parts) >= 5 and parts[0] in ['0', '1', '2']:
-                    row_idx = int(parts[0])
-                    t_vec[row_idx] = float(parts[1])
-                    u_mat[row_idx, 0] = float(parts[2])
-                    u_mat[row_idx, 1] = float(parts[3])
-                    u_mat[row_idx, 2] = float(parts[4])
-        return u_mat, t_vec
-        
-    except FileNotFoundError:
-        print(f"Matrix file not found: {matrix_file_path}")
-        return None, None
-
 # Load CSV files
 df = pd.read_csv(DATASET_PATH)
 pdbs = list(df['PDB'].unique())
