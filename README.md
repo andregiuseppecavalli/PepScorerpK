@@ -1,9 +1,9 @@
-# Protein-Peptide Binding Affinity Predictor
+# PepScorer:pK: a Protein-Peptide Binding Affinity Predictor
 
-Predicts binding affinity (pK) for a protein-peptide complex from a PDB
-structure. The peptide is specified by its **chain ID**; the binding pocket is
-detected automatically as the protein residues within a distance cutoff of the
-peptide.
+PepScorer:pK predicts binding affinity (pK) for a protein-peptide complex from a PDB
+structure. 
+
+Zenodo repository with PDB structures and precomputed matrices: 
 
 ## How it works
 
@@ -83,7 +83,7 @@ copies the three models into `src/models/` so `predict.py` uses them.
 A clustering code, to replicate the dataset clustering used in the paper for train-test splitting, is provided in the `utils` directory.
 * To run it, first download the `Ligand_RMSD_matrix.csv` file, the `TM_matrix.csv` file, and the `Ligand_similarity_matrix.csv` from the Zenodo repository.
 * Then, copy them into the `data/` directory.
-* Finally, navigate into the `utils` directory and execute the command:
+* Finally, navigate into the `utils/` directory and execute the command:
 ```bash
 python cluster_complexes.py
 ```
