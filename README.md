@@ -78,6 +78,16 @@ Outputs go to `training_output/` (`models/`, computed `features/`,
 `test_metrics.csv`, `test_predictions.csv`, `config_used.py`). `--install`
 copies the three models into `src/models/` so `predict.py` uses them.
 
+## Dataset clustering
+
+A clustering code, to replicate the dataset clustering used in the paper for train-test splitting, is provided in the `utils` directory.
+* To run it, first download the `Ligand_RMSD_matrix.csv` file, the `TM_matrix.csv` file, and the `Ligand_similarity_matrix.csv` from the Zenodo repository.
+* Then, copy them into the `data/` directory.
+* Finally, navigate into the `utils` directory and execute the command:
+```bash
+python cluster_complexes.py
+```
+
 ## License
 
 This project is licensed under the MIT License — see `LICENSE`.
