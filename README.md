@@ -49,8 +49,11 @@ Options: `--radius 5.0`, `--workdir features`, `--device cpu|cuda`,
 `--no-save-features`.
 
 Intermediate feature files are written to `--workdir` (default `features/`).
+
 The output CSV has `id, pred_mpnn, pred_seq, pred_pK, nn_distance, ad_threshold, in_domain` (plus `y_true` and printed
-metrics when `pK` is supplied). The last three columns are applicability domain (AD) related. `nn_distance` is the cosine distance computed between the complex's concatentated features and the 1-NN of the training features. `ad_threshold` is the threshold employed to defined if a complex is inside or outside the AD, which is reported in `in_domain` column.
+metrics when `pK` is supplied). 
+
+The last three columns are applicability domain (AD) related. `nn_distance` is the cosine distance computed between the complex's concatentated features and the 1-NN of the training features. `ad_threshold` is the threshold employed to defined if a complex is inside or outside the AD, which is reported in `in_domain` column.
 
 ## Retraining
 
