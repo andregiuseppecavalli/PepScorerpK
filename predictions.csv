@@ -1,0 +1,2 @@
+id,pred_mpnn,pred_seq,pred_pK,nn_distance,ad_threshold,in_domain
+1AQC,5.800604666136897,6.814438329194495,6.307521497665696,0.4484747,0.5427714586257935,True
