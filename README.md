@@ -72,7 +72,7 @@ For each feature matrix, `train.py` either loads the `.npz` given in
   two HGB regressors are refit.
 * **Full replication**: set all three to `None` and provide the structures as
   `data/pdbs/<Frame>.pdb` (pattern: `PDB_FILENAME`, peptide chain: `PEPTIDE_CHAIN`).
-  The `pdbs` directory can be downloaded, together with the test structures, from the Zenodo repository:
+  The `pdbs` directory can be downloaded, together with the test structures, from the Zenodo repository.
 
 The HGB regressors are fit on all `Train` frames; if `EVALUATE_TEST` is on,
 the ensemble is scored on first-frame (`replica1_..._1`) `Test` rows.
