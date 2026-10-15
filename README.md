@@ -3,7 +3,7 @@
 PepScorer:pK predicts binding affinity (pK) for a protein-peptide complex from a PDB
 structure. 
 
-Zenodo repository with PDB structures and precomputed matrices: 
+Zenodo repository with PDB structures and precomputed matrices: https://zenodo.org/records/23185007 
 
 ## How it works
 
